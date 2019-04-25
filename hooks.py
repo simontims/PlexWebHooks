@@ -14,6 +14,10 @@ def webhook():
 
 	data = json.loads(request.form['payload'])
 
+	
+	# Do what you need with the data here.
+	# In this case, we're only acting on media.play or media.resume events.
+
 	if data['event'] == 'media.play' or data['event'] == 'media.resume':
 		user = data['Account']['title']
 		artist = data['Metadata']['grandparentTitle']
@@ -28,5 +32,6 @@ def webhook():
 	# print data
 	return "OK"
 
+# Set the IP address you want to bind to here, and specify the port
 if __name__ == '__main__':
 	app.run(host='192.168.1.20', port=8091, debug=False,threaded=True)
