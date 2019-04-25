@@ -1,21 +1,32 @@
-import web
-import json
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-urls = ('/.*', 'hooks')
-app = web.application(urls, globals())
+import os, sys, json
+from datetime import datetime
+from flask import Flask, abort, request
 
-class hooks:
-    def POST(self):
-        data = web.data()
-        print
-        print 'DATA RECEIVED:'
-        print data
-        print data.decode('utf-8')
-        print 'Converting data to Python'
-        jsonToPython = json.loads(data)
-        print 'Done conversion'
-        print jsonToPython
-        return 'OK'
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST']) 
+def webhook():
+	if not request.form:
+		abort(400)
+
+	data = json.loads(request.form['payload'])
+
+	if data['event'] == 'media.play' or data['event'] == 'media.resume':
+		user = data['Account']['title']
+		artist = data['Metadata']['grandparentTitle']
+		title = data['Metadata']['title']
+		event = data['event'][6:]
+
+		# print user
+		print "%s %s by %s" % (event.capitalize(), title, artist)
+		# print artist
+		# print title
+
+	# print data
+	return "OK"
 
 if __name__ == '__main__':
-    app.run()
+	app.run(host='192.168.1.20', port=8091, debug=False,threaded=True)
